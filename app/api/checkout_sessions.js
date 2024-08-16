@@ -45,3 +45,20 @@ export async function POST(req) {
         )
     }
 }
+
+export async function GET(req) {
+    const searchParams = req.nextURL.searchParams;
+    const session_id = searchParams.get('session_id');
+
+    try {
+        if (!session) {
+            throw new Error('Session ID is required');
+        } 
+        const checkoutSession = await stripe.checkout.sessions.retrieve(session_id)
+
+        return NextResponse.json(checkoutSession)
+    } catch {
+        console.error('Error retreiving checkout session:', error)
+        return NextResponse.json({error: {message: error.message}}, {status: 500})
+    }
+}
